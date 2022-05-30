@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #if defined(__CYGWIN32__)
 #define UNITY_INTERFACE_API __stdcall
 #define UNITY_INTERFACE_EXPORT __declspec(dllexport)
@@ -16,5 +18,8 @@
 
 extern "C"
 {
-	UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API CalculateTerrainDistance();
+	UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API CalculateTerrainDistance(
+		const uint8_t* htMap,
+		int aX, int aY,
+		int bX, int bY);
 }

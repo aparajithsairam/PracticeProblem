@@ -29,15 +29,15 @@ public class TerrainDistanceCalculator : MonoBehaviour
         calcTerrainDistButton.interactable = false;
         var t1 = CalculateTerrainDistance(preHeightMapReaderTask);
         _ = t1.ContinueWith((t) => 
-            { preDistText.text = 1.ToString(); },
+            { preDistText.text = t.Result.ToString(); },
             TaskScheduler.FromCurrentSynchronizationContext());
         var t2 = CalculateTerrainDistance(postHeightMapReaderTask);
         _ = t2.ContinueWith((t) =>
-            { postDistText.text = 2.ToString(); },
+            { postDistText.text = t.Result.ToString(); },
             TaskScheduler.FromCurrentSynchronizationContext());
         _ = Task.WhenAll(t1, t2).ContinueWith((t) =>
             {
-                differenceText.text = 3.ToString();
+                differenceText.text = (t1.Result - t2.Result).ToString();
                 calcTerrainDistButton.interactable = true;
             },
             TaskScheduler.FromCurrentSynchronizationContext());
@@ -47,7 +47,6 @@ public class TerrainDistanceCalculator : MonoBehaviour
     {
         var hts = await htMapReaderTask;
         Debug.Log("Reader task complete");
-        await Task.Delay(2000);
-        return 1;
+        return await Task.Run(() => Plugin.CalculateTerrainDistance(hts, 0, 1, 2, 3) );
     }
 }
