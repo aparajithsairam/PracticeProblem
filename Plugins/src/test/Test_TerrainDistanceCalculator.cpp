@@ -16,7 +16,8 @@ float CalculateTerrainDistance(
 {
 	const int sizeOfHtMap = 512 * 512;
 	std::vector<uint8_t> htMap(sizeOfHtMap);
-
+	std::ifstream inFile(heightMapFilePath, std::ios_base::binary);
+	inFile.read((char*)&htMap[0], sizeOfHtMap);
 
 	return CalculateTerrainDistance(&htMap[0], aX, aY, bX, bY);
 }
