@@ -32,15 +32,39 @@ float CalculateTerrainDistanceDifference(
 		- CalculateTerrainDistance(heightMapFilePath2, aX, aY, bX, bY);
 }
 
-TEST(TerrainDistanceCalculator, Test1)
+TEST(TerrainDistanceCalculator, WrongPoint)
 {
 	std::cout << CalculateTerrainDistance(
 		"C:/Users/asairam/Documents/PracticeProblem/PracticeProblemUnity/Assets/StreamingAssets/pre.data",
 		2, 3,
-		4, 5) << "\n";
+		2, -3) << "\n";
 }
 
-TEST(TerrainDistanceDifferenceCalculator, Test1)
+TEST(TerrainDistanceCalculator, SamePoint)
+{
+	std::cout << CalculateTerrainDistance(
+		"C:/Users/asairam/Documents/PracticeProblem/PracticeProblemUnity/Assets/StreamingAssets/pre.data",
+		2, 3,
+		2, 3) << "\n";
+}
+
+TEST(TerrainDistanceCalculator, VerticalDistance)
+{
+	std::cout << CalculateTerrainDistance(
+		"C:/Users/asairam/Documents/PracticeProblem/PracticeProblemUnity/Assets/StreamingAssets/pre.data",
+		2, 3,
+		2, 5) << "\n";
+}
+
+TEST(TerrainDistanceCalculator, HorizontalDistance)
+{
+	std::cout << CalculateTerrainDistance(
+		"C:/Users/asairam/Documents/PracticeProblem/PracticeProblemUnity/Assets/StreamingAssets/post.data",
+		2, 30,
+		10, 30) << "\n";
+}
+
+TEST(TerrainDistanceDifferenceCalculator, Diff)
 {
 	std::cout << CalculateTerrainDistanceDifference(
 		"C:/Users/asairam/Documents/PracticeProblem/PracticeProblemUnity/Assets/StreamingAssets/pre.data",

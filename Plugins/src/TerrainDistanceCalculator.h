@@ -27,7 +27,7 @@ extern "C"
 	// Sum the distance between consecutive 3D points
 	// Return sum
 
-	// Corner cases are vertical line, horizontal line, 45 deg diagonal line
+	// Corner cases are same point, vertical line, horizontal line, 45 deg diagonal line
 	// Also have to consider corner case in 3D when the "cutting plane"
 	// is passing through a triangle which is vertcial
 	UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API CalculateTerrainDistance(

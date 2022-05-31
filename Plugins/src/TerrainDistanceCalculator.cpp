@@ -88,9 +88,33 @@ float verticalDistance(
 	int abX,
 	int aY, int bY)
 {
-	auto aVec = find3DCoordinate(htMap, abX, aY);
-	auto bVec = find3DCoordinate(htMap, abX, bY);
-	return 0;
+	float totalDist = 0.0f;
+	if (aY > bY)
+		std::swap(aY, bY);
+	for (int y = aY; y < bY; ++y)
+	{
+		auto aVec = find3DCoordinate(htMap, abX, y);
+		auto bVec = find3DCoordinate(htMap, abX, y + 1);
+		totalDist += (aVec - bVec).norm();
+	}
+	return totalDist;
+}
+
+float horizontalDistance(
+	const uint8_t* htMap,
+	int aX, int bX,
+	int abY)
+{
+	float totalDist = 0.0f;
+	if (aX > bX)
+		std::swap(aX, bX);
+	for (int x = aX; x < bX; ++x)
+	{
+		auto aVec = find3DCoordinate(htMap, x, abY);
+		auto bVec = find3DCoordinate(htMap, x + 1, abY);
+		totalDist += (aVec - bVec).norm();
+	}
+	return totalDist;
 }
 
 float CalculateTerrainDistance(
@@ -99,7 +123,20 @@ float CalculateTerrainDistance(
 	int bX, int bY)
 {
 	if (aX < 0 || aX >= HEIGHT_MAP_DIM ||
-		bX < 0 || bY >= HEIGHT_MAP_DIM)
+		aY < 0 || aY >= HEIGHT_MAP_DIM ||
+		bX < 0 || bX >= HEIGHT_MAP_DIM ||
+		bY < 0 || bY >= HEIGHT_MAP_DIM)
+		return -1.0f;
+
+	if (aX == bX &&
+		aY == bY)
 		return 0.0f;
+
+	if (aX == bX)
+		return verticalDistance(htMap, aX, aY, bY);
+
+	if (aY == bY)
+		return horizontalDistance(htMap, aX, bX, aY);
+
 	return 0.0f;
 }
