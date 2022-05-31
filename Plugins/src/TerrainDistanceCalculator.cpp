@@ -119,6 +119,48 @@ float horizontalDistance(
 	return totalDist;
 }
 
+float diagonal45DegLine(
+	const uint8_t* htMap,
+	int aX, int aY,
+	int bX, int bY)
+{
+	float totalDist = 0.0f;
+	if (aX > bX)
+	{
+		std::swap(aX, bX);
+		std::swap(aY, bY);
+	}
+
+	for (int x = aX, y = aY; x < bX; ++x, ++y)
+	{
+		auto aVec = find3DCoordinate(htMap, x, y);
+		auto bVec = find3DCoordinate(htMap, x + 1, y + 1);
+		totalDist += (aVec - bVec).norm();
+	}
+	return totalDist;
+}
+
+float diagonal135DegLine(
+	const uint8_t* htMap,
+	int aX, int aY,
+	int bX, int bY)
+{
+	float totalDist = 0.0f;
+	if (aX > bX)
+	{
+		std::swap(aX, bX);
+		std::swap(aY, bY);
+	}
+
+	for (int x = aX, y = aY; x < bX; ++x, --y)
+	{
+		auto aVec = find3DCoordinate(htMap, x, y);
+		auto bVec = find3DCoordinate(htMap, x + 1, y - 1);
+		totalDist += (aVec - bVec).norm();
+	}
+	return totalDist;
+}
+
 // This function has been copied from internet and modified by me; hopefully it works
 // Bool indicates if intersection happened or not
 std::pair<bool, Eigen::Vector2f> lineIntersection(
@@ -193,7 +235,6 @@ float nonSpecialCaseDistance(
 		lineSegments.push_back({ Eigen::Vector2f(i, 0), Eigen::Vector2f(i, HEIGHT_MAP_DIM - 1) });
 		// all horizontal lines
 		lineSegments.push_back({ Eigen::Vector2f(0, i), Eigen::Vector2f(HEIGHT_MAP_DIM - 1, i) });
-		
 	}
 
 	// all diagonal lines
@@ -254,6 +295,12 @@ float CalculateTerrainDistance(
 
 	if (aY == bY)
 		return horizontalDistance(htMap, aX, bX, aY);
+
+	if ((aX - bX) == (aY - bY))
+		return diagonal45DegLine(htMap, aX, aY, bX, bY);
+
+	if ((aX - bX) == -(aY - bY))
+		return diagonal135DegLine(htMap, aX, aY, bX, bY);
 
 	return nonSpecialCaseDistance(htMap, aX, aY, bX, bY);
 }

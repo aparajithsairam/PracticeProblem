@@ -64,6 +64,22 @@ TEST(TerrainDistanceCalculator, HorizontalDistance)
 		10, 30) << "\n";
 }
 
+TEST(TerrainDistanceCalculator, Diagonal45DegDistance)
+{
+	std::cout << CalculateTerrainDistance(
+		TEST_DATA_PATH "/post.data",
+		2, 10,
+		12, 20) << "\n";
+}
+
+TEST(TerrainDistanceCalculator, Diagonal135DegDistance)
+{
+	std::cout << CalculateTerrainDistance(
+		TEST_DATA_PATH "/post.data",
+		2, 100,
+		62, 40) << "\n";
+}
+
 TEST(TerrainDistanceCalculator, NonSpecialCase)
 {
 	std::cout << CalculateTerrainDistance(
