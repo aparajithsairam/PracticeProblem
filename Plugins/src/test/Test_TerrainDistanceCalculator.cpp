@@ -35,7 +35,7 @@ float CalculateTerrainDistanceDifference(
 TEST(TerrainDistanceCalculator, WrongPoint)
 {
 	std::cout << CalculateTerrainDistance(
-		"C:/Users/asairam/Documents/PracticeProblem/PracticeProblemUnity/Assets/StreamingAssets/pre.data",
+		TEST_DATA_PATH "/pre.data",
 		2, 3,
 		2, -3) << "\n";
 }
@@ -43,7 +43,7 @@ TEST(TerrainDistanceCalculator, WrongPoint)
 TEST(TerrainDistanceCalculator, SamePoint)
 {
 	std::cout << CalculateTerrainDistance(
-		"C:/Users/asairam/Documents/PracticeProblem/PracticeProblemUnity/Assets/StreamingAssets/pre.data",
+		TEST_DATA_PATH "/pre.data",
 		2, 3,
 		2, 3) << "\n";
 }
@@ -51,7 +51,7 @@ TEST(TerrainDistanceCalculator, SamePoint)
 TEST(TerrainDistanceCalculator, VerticalDistance)
 {
 	std::cout << CalculateTerrainDistance(
-		"C:/Users/asairam/Documents/PracticeProblem/PracticeProblemUnity/Assets/StreamingAssets/pre.data",
+		TEST_DATA_PATH "/pre.data",
 		2, 3,
 		2, 5) << "\n";
 }
@@ -59,7 +59,7 @@ TEST(TerrainDistanceCalculator, VerticalDistance)
 TEST(TerrainDistanceCalculator, HorizontalDistance)
 {
 	std::cout << CalculateTerrainDistance(
-		"C:/Users/asairam/Documents/PracticeProblem/PracticeProblemUnity/Assets/StreamingAssets/post.data",
+		TEST_DATA_PATH "/post.data",
 		2, 30,
 		10, 30) << "\n";
 }
@@ -67,7 +67,7 @@ TEST(TerrainDistanceCalculator, HorizontalDistance)
 TEST(TerrainDistanceCalculator, NonSpecialCase)
 {
 	std::cout << CalculateTerrainDistance(
-		"C:/Users/asairam/Documents/PracticeProblem/PracticeProblemUnity/Assets/StreamingAssets/post.data",
+		TEST_DATA_PATH "/pre.data",
 		2, 30,
 		10, 50) << "\n";
 }
@@ -75,8 +75,8 @@ TEST(TerrainDistanceCalculator, NonSpecialCase)
 TEST(TerrainDistanceDifferenceCalculator, Diff)
 {
 	std::cout << CalculateTerrainDistanceDifference(
-		"C:/Users/asairam/Documents/PracticeProblem/PracticeProblemUnity/Assets/StreamingAssets/pre.data",
-		"C:/Users/asairam/Documents/PracticeProblem/PracticeProblemUnity/Assets/StreamingAssets/post.data",
+		TEST_DATA_PATH "/pre.data",
+		TEST_DATA_PATH "/post.data",
 		2, 3,
 		4, 5) << "\n";
 }
