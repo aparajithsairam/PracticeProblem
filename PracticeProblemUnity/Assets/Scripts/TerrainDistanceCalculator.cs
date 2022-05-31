@@ -10,6 +10,8 @@ public class TerrainDistanceCalculator : MonoBehaviour
     Task<byte[]> preHeightMapReaderTask, postHeightMapReaderTask;
     public Text preDistText, postDistText, differenceText;
     public Button calcTerrainDistButton;
+
+    public Text aXText, aYText, bXText, bYText;
     void Start()
     {
         preHeightMapReaderTask = ReadHeightMap(Path.Combine(Application.streamingAssetsPath, "pre.data"));
@@ -27,11 +29,16 @@ public class TerrainDistanceCalculator : MonoBehaviour
     public async void CalculateTerrainDistance()
     {
         calcTerrainDistButton.interactable = false;
-        var t1 = CalculateTerrainDistance(preHeightMapReaderTask);
+        int aX = int.Parse(aXText.text);
+        int aY = int.Parse(aYText.text);
+        int bX = int.Parse(bXText.text);
+        int bY = int.Parse(bYText.text);
+
+        var t1 = CalculateTerrainDistance(preHeightMapReaderTask, aX, aY, bX, bY);
         _ = t1.ContinueWith((t) => 
             { preDistText.text = t.Result.ToString(); },
             TaskScheduler.FromCurrentSynchronizationContext());
-        var t2 = CalculateTerrainDistance(postHeightMapReaderTask);
+        var t2 = CalculateTerrainDistance(postHeightMapReaderTask, aX, aY, bX, bY);
         _ = t2.ContinueWith((t) =>
             { postDistText.text = t.Result.ToString(); },
             TaskScheduler.FromCurrentSynchronizationContext());
@@ -43,10 +50,13 @@ public class TerrainDistanceCalculator : MonoBehaviour
             TaskScheduler.FromCurrentSynchronizationContext());
     }
 
-    public async Task<float> CalculateTerrainDistance(Task<byte[]> htMapReaderTask)
+    public async Task<float> CalculateTerrainDistance(
+        Task<byte[]> htMapReaderTask,
+        int aX, int aY, int bX, int bY)
     {
         var hts = await htMapReaderTask;
         Debug.Log("Reader task complete");
-        return await Task.Run(() => Plugin.CalculateTerrainDistance(hts, 0, 1, 2, 3) );
+
+        return await Task.Run(() => Plugin.CalculateTerrainDistance(hts, aX, aY, bX, bY) );
     }
 }
