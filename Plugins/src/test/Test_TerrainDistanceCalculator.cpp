@@ -64,6 +64,14 @@ TEST(TerrainDistanceCalculator, HorizontalDistance)
 		10, 30) << "\n";
 }
 
+TEST(TerrainDistanceCalculator, NonSpecialCase)
+{
+	std::cout << CalculateTerrainDistance(
+		"C:/Users/asairam/Documents/PracticeProblem/PracticeProblemUnity/Assets/StreamingAssets/post.data",
+		2, 30,
+		10, 50) << "\n";
+}
+
 TEST(TerrainDistanceDifferenceCalculator, Diff)
 {
 	std::cout << CalculateTerrainDistanceDifference(

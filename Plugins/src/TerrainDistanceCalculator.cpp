@@ -2,6 +2,8 @@
 #include <Eigen/Dense>
 #include <Eigen/src/Geometry/OrthoMethods.h> // needed for cross product
 
+#include <map>
+
 const int HEIGHT_MAP_DIM = 512;
 const float EPSILON = 0.001f;
 
@@ -117,6 +119,121 @@ float horizontalDistance(
 	return totalDist;
 }
 
+// This function has been copied from internet and modified by me; hopefully it works
+// Bool indicates if intersection happened or not
+std::pair<bool, Eigen::Vector2f> lineIntersection(
+	const Eigen::Vector2f& A,
+	const Eigen::Vector2f& B,
+	const Eigen::Vector2f& C,
+	const Eigen::Vector2f& D)
+{
+	// Line AB represented as a1x + b1y = c1
+	double a1 = B.y() - A.y();
+	double b1 = A.x() - B.x();
+	double c1 = a1 * (A.x()) + b1 * (A.y());
+
+	// Line CD represented as a2x + b2y = c2
+	double a2 = D.y() - C.y();
+	double b2 = C.x() - D.x();
+	double c2 = a2 * (C.x()) + b2 * (C.y());
+
+	double determinant = a1 * b2 - a2 * b1;
+
+	if (determinant == 0)
+	{
+		// The lines are parallel
+		return std::make_pair(false, Eigen::Vector2f());
+	}
+	else
+	{
+		double x = (b2 * c1 - b1 * c2) / determinant;
+		double y = (a1 * c2 - a2 * c1) / determinant;
+		return std::make_pair(true, Eigen::Vector2f(x, y));
+	}
+}
+
+std::pair<bool, Eigen::Vector2f> lineSegmentIntersection(
+	const Eigen::Vector2f& A,
+	const Eigen::Vector2f& B,
+	const Eigen::Vector2f& C,
+	const Eigen::Vector2f& D)
+{
+	bool intersected;
+	Eigen::Vector2f intPt;
+	std::tie(intersected, intPt) = lineIntersection(A, B, C, D);
+	if(!intersected)
+		return { false, Eigen::Vector2f() };
+
+	float minX = std::min(A.x(), std::min(B.x(), std::min(C.x(), D.x())));
+	float minY = std::min(A.y(), std::min(B.y(), std::min(C.y(), D.y())));
+
+	float maxX = std::max(A.x(), std::max(B.x(), std::max(C.x(), D.x())));
+	float maxY = std::max(A.y(), std::max(B.y(), std::max(C.y(), D.y())));
+
+	if (intPt.x() >= minX && intPt.x() <= maxX &&
+		intPt.y() >= minY && intPt.y() <= maxY)
+	{
+		return { true, intPt };
+	}
+	return { false, Eigen::Vector2f() };
+}
+
+// can be optimized a lot if time permits
+// Totally untested
+float nonSpecialCaseDistance(
+	const uint8_t* htMap,
+	int aX, int aY,
+	int bX, int bY)
+{
+	std::vector<std::pair<Eigen::Vector2f, Eigen::Vector2f>> lineSegments;
+	
+	for (int i = 0; i < HEIGHT_MAP_DIM; ++i)
+	{
+		// all vertical lines
+		lineSegments.push_back({ Eigen::Vector2f(i, 0), Eigen::Vector2f(i, HEIGHT_MAP_DIM - 1) });
+		// all horizontal lines
+		lineSegments.push_back({ Eigen::Vector2f(0, i), Eigen::Vector2f(HEIGHT_MAP_DIM - 1, i) });
+		
+	}
+
+	// all diagonal lines
+	for (int i = 0; i < HEIGHT_MAP_DIM - 1; ++i)
+	{
+		for (int j = 0; j < HEIGHT_MAP_DIM - 1; ++j)
+		{
+			lineSegments.push_back({ Eigen::Vector2f(i + 1, j), Eigen::Vector2f(i, j + 1) });
+		}
+	}
+
+	Eigen::Vector2f a(aX, aY), b(bX, bY);
+	std::map<float, Eigen::Vector2f> distanceIntersection; // will sort by distance automatically
+	for (int i = 0; i < lineSegments.size(); ++i)
+	{
+		bool intersected;
+		Eigen::Vector2f intPt;
+		std::tie(intersected, intPt) = lineSegmentIntersection(a, b, lineSegments[i].first, lineSegments[i].second);
+		if (intersected)
+		{
+			distanceIntersection.insert({ (a - intPt).norm(), intPt });
+		}
+	}
+
+
+	float totalDist = 0.0f;
+	Eigen::Vector2f* prev = nullptr;
+	for (auto distIntersect : distanceIntersection)
+	{
+		if (prev)
+		{
+			totalDist += (find3DCoordinate(htMap, distIntersect.second.x(), distIntersect.second.y())
+				- find3DCoordinate(htMap, prev->x(), prev->y())).norm();
+		}
+		prev = &distIntersect.second;
+	}
+
+	return totalDist;
+}
+
 float CalculateTerrainDistance(
 	const uint8_t* htMap,
 	int aX, int aY,
@@ -138,5 +255,5 @@ float CalculateTerrainDistance(
 	if (aY == bY)
 		return horizontalDistance(htMap, aX, bX, aY);
 
-	return 0.0f;
+	return nonSpecialCaseDistance(htMap, aX, aY, bX, bY);
 }
