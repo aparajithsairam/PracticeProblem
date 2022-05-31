@@ -119,27 +119,6 @@ float horizontalDistance(
 	return totalDist;
 }
 
-float diagonal45DegLine(
-	const uint8_t* htMap,
-	int aX, int aY,
-	int bX, int bY)
-{
-	float totalDist = 0.0f;
-	if (aX > bX)
-	{
-		std::swap(aX, bX);
-		std::swap(aY, bY);
-	}
-
-	for (int x = aX, y = aY; x < bX; ++x, ++y)
-	{
-		auto aVec = find3DCoordinate(htMap, x, y);
-		auto bVec = find3DCoordinate(htMap, x + 1, y + 1);
-		totalDist += (aVec - bVec).norm();
-	}
-	return totalDist;
-}
-
 float diagonal135DegLine(
 	const uint8_t* htMap,
 	int aX, int aY,
@@ -299,9 +278,6 @@ float CalculateTerrainDistance(
 
 	if (aY == bY)
 		return horizontalDistance(htMap, aX, bX, aY);
-
-	if ((aX - bX) == (aY - bY))
-		return diagonal45DegLine(htMap, aX, aY, bX, bY);
 
 	if ((aX - bX) == -(aY - bY))
 		return diagonal135DegLine(htMap, aX, aY, bX, bY);
