@@ -194,29 +194,34 @@ std::pair<bool, Eigen::Vector2f> lineIntersection(
 	}
 }
 
+bool checkIfPointIsInsideLineSeg(
+	const std::pair<Eigen::Vector2f, Eigen::Vector2f>& lineSeg,
+	const Eigen::Vector2f& point)
+{
+	auto minMaxX = std::minmax(lineSeg.first.x(), lineSeg.second.x());
+	auto minMaxY = std::minmax(lineSeg.first.y(), lineSeg.second.y());
+	return point.x() >= minMaxX.first && point.y() >= minMaxY.first && 
+		point.x() <= minMaxX.second && point.y() <= minMaxY.second;
+}
+
 std::pair<bool, Eigen::Vector2f> lineSegmentIntersection(
-	const Eigen::Vector2f& A,
-	const Eigen::Vector2f& B,
-	const Eigen::Vector2f& C,
-	const Eigen::Vector2f& D)
+	const std::pair<Eigen::Vector2f, Eigen::Vector2f>& lineSeg1,
+	const std::pair<Eigen::Vector2f, Eigen::Vector2f>& lineSeg2)
 {
 	bool intersected;
 	Eigen::Vector2f intPt;
-	std::tie(intersected, intPt) = lineIntersection(A, B, C, D);
+	std::tie(intersected, intPt) = lineIntersection(lineSeg1.first, lineSeg1.second,
+		lineSeg2.first, lineSeg2.second);
 	if(!intersected)
 		return { false, Eigen::Vector2f() };
 
-	float minX = std::min(A.x(), std::min(B.x(), std::min(C.x(), D.x())));
-	float minY = std::min(A.y(), std::min(B.y(), std::min(C.y(), D.y())));
-
-	float maxX = std::max(A.x(), std::max(B.x(), std::max(C.x(), D.x())));
-	float maxY = std::max(A.y(), std::max(B.y(), std::max(C.y(), D.y())));
-
-	if (intPt.x() >= minX && intPt.x() <= maxX &&
-		intPt.y() >= minY && intPt.y() <= maxY)
+	// Check if intersection lies withing both the segments
+	if (checkIfPointIsInsideLineSeg(lineSeg1, intPt) &&
+		checkIfPointIsInsideLineSeg(lineSeg2, intPt))
 	{
 		return { true, intPt };
 	}
+
 	return { false, Eigen::Vector2f() };
 }
 
@@ -252,7 +257,7 @@ float nonSpecialCaseDistance(
 	{
 		bool intersected;
 		Eigen::Vector2f intPt;
-		std::tie(intersected, intPt) = lineSegmentIntersection(a, b, lineSegments[i].first, lineSegments[i].second);
+		std::tie(intersected, intPt) = lineSegmentIntersection({ a, b }, lineSegments[i]);
 		if (intersected)
 		{
 			distanceIntersection.insert({ (a - intPt).norm(), intPt });
