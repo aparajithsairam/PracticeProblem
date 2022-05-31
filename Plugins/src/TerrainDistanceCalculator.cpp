@@ -266,15 +266,14 @@ float nonSpecialCaseDistance(
 
 
 	float totalDist = 0.0f;
-	Eigen::Vector2f* prev = nullptr;
-	for (auto distIntersect : distanceIntersection)
+	auto it = distanceIntersection.begin();
+	auto prev = it;
+	++it;
+	for (; it != distanceIntersection.end(); ++it)
 	{
-		if (prev)
-		{
-			totalDist += (find3DCoordinate(htMap, distIntersect.second.x(), distIntersect.second.y())
-				- find3DCoordinate(htMap, prev->x(), prev->y())).norm();
-		}
-		prev = &distIntersect.second;
+		totalDist += (find3DCoordinate(htMap, it->second.x(), it->second.y())
+			- find3DCoordinate(htMap, prev->second.x(), prev->second.y())).norm();
+		prev = it;
 	}
 
 	return totalDist;
